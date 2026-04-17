@@ -9,3 +9,4 @@ COPY . /app
 
 RUN mkdir -p inputs out
 # bump to force rebuild 1776383376
+# trigger rebuild post-refactor 1776387187
