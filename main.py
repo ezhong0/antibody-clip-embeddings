@@ -1,7 +1,23 @@
+import hashlib
 import os
 import torch
 from proj_head_package import ProjectionHead
 import sys
+
+
+# LFS refactor E2E verification: compute + print sha256 of the LFS-tracked
+# weights.bin on startup so the container's runtime output can be verified
+# against the local sha. Prints BEFORE the input-file check so the signal
+# surfaces even when no real input is provided for the test run.
+_LFS_PROBE = "/app/weights.bin"
+if os.path.exists(_LFS_PROBE):
+    _h = hashlib.sha256()
+    with open(_LFS_PROBE, "rb") as _f:
+        for _chunk in iter(lambda: _f.read(1 << 20), b""):
+            _h.update(_chunk)
+    print(f"LFS_PROBE weights.bin size={os.path.getsize(_LFS_PROBE)} sha256={_h.hexdigest()}", flush=True)
+else:
+    print(f"LFS_PROBE weights.bin MISSING at {_LFS_PROBE}", flush=True)
 
 
 #Get environment variables
